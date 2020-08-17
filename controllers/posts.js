@@ -93,7 +93,7 @@ exports.updatePost = async (req, res, next) => {
     [rows] = await connection.query(query, data);
     // 다른사람이 쓴 글을, 이 사람이 바꾸려고 하면, 401로 보낸다.
     if (rows[0].user_id != user_id) {
-      req.status(401).json();
+      req.status(402).json();
       return;
     }
   } catch (e) {
@@ -158,7 +158,7 @@ exports.deletePost = async (req, res, next) => {
     [rows] = await connection.query(query, data);
     // 다른사람 포스팅이면, 401로 보낸다.
     if (rows[0].user_id != user_id) {
-      req.status(401).json();
+      req.status(403).json();
       return;
     }
     old_photo_url = rows[0].photo_url;
