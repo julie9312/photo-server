@@ -1,6 +1,6 @@
 const path = require("path");
 const connection = require("../db/mysql_connection");
-///////
+
 // @desc        친구 맺기
 // @route       POST /api/v1/follows
 // @request     user_id(auth), friend_user_id
