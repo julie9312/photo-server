@@ -3,7 +3,6 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 const connection = require("../db/mysql_connection");
-const { errorMonitor } = require("mysql2/lib/pool");
 
 // @desc        회원가입
 // @route       POST /api/v1/users

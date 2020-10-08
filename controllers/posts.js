@@ -1,7 +1,6 @@
 const path = require("path");
 const connection = require("../db/mysql_connection");
 const fs = require("fs");
-
 var AWS = require("aws-sdk");
 
 // @desc        사진1장과 내용을 업로드 하는 API
@@ -24,15 +23,6 @@ exports.uploadPhoto = async (req, res, next) => {
   }
 
   photo.name = `photo_${user_id}_${Date.now()}${path.parse(photo.name).ext}`;
-  // 아래 주석은 로컬컴퓨터로 저장하는 법
-  // let fileUploadPath = `${process.env.FILE_UPLOAD_PATH}/${photo.name}`;
-
-  // photo.mv(fileUploadPath, async (err) => {
-  //   if (err) {
-  //     console.log(err);
-  //     return;
-  //   }
-  // });
 
   let file = photo.data;
   const S3_BUCKET = "julie9312-test-edu";
