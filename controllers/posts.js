@@ -2,6 +2,8 @@ const path = require("path");
 const connection = require("../db/mysql_connection");
 const fs = require("fs");
 
+var AWS = require("aws-sdk");
+
 // @desc        사진1장과 내용을 업로드 하는 API
 // @route       POST /api/v1/posts
 // @request     photo, content, user_id(auth)
@@ -22,29 +24,56 @@ exports.uploadPhoto = async (req, res, next) => {
   }
 
   photo.name = `photo_${user_id}_${Date.now()}${path.parse(photo.name).ext}`;
+  // 아래 주석은 로컬컴퓨터로 저장하는 법
+  // let fileUploadPath = `${process.env.FILE_UPLOAD_PATH}/${photo.name}`;
 
-  let fileUploadPath = `${process.env.FILE_UPLOAD_PATH}/${photo.name}`;
+  // photo.mv(fileUploadPath, async (err) => {
+  //   if (err) {
+  //     console.log(err);
+  //     return;
+  //   }
+  // });
 
-  photo.mv(fileUploadPath, async (err) => {
-    if (err) {
-      console.log(err);
+  let file = photo.data;
+  const S3_BUCKET = "julie9312-test-edu";
+  const AWS_ACCESS_KEY_ID = "AKIA4DYY6RHMMBHTJHO4";
+  const AWS_SECRET_ACCESS_KEY = "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";
+
+  AWS.config.update({
+    accessKeyId: AWS_ACCESS_KEY_ID,
+    secretAccessKey: AWS_SECRET_ACCESS_KEY,
+  });
+
+  //s3에 파일업로드
+  const s3 = new AWS.S3();
+
+  let params = {
+    Bucket: S3_BUCKET,
+    Key: photo.name,
+    Body: file,
+    ContentType: path.parse(photo.name).ext.split(".")[1],
+    ACL: "public-read",
+  };
+
+  s3.upload(params, async function (err, s3Data) {
+    console.log("err : ", err, "s3Data : ", s3Data);
+
+    let query =
+      "insert into photo_post (user_id, photo_url, content) \
+                values (?,?,?)";
+    let data = [user_id, photo.name, content];
+
+    try {
+      [result] = await connection.query(query, data);
+      res.status(200).json({ success: true });
+      return;
+    } catch (e) {
+      res.status(500).json({ error: e });
       return;
     }
   });
 
-  let query =
-    "insert into photo_post (user_id, photo_url, content) \
-                values (?,?,?)";
-  let data = [user_id, photo.name, content];
-
-  try {
-    [result] = await connection.query(query, data);
-    res.status(200).json({ success: true });
-    return;
-  } catch (e) {
-    res.status(500).json({ error: e });
-    return;
-  }
+  //photo_3_221008.jpg
 };
 
 // @desc    내가 쓴 포스트 정보 가져오기 (25개씩)
