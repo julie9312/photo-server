@@ -3,6 +3,7 @@ const bcrypt = require("bcryptjs");
 const jwt = require("jsonwebtoken");
 
 const connection = require("../db/mysql_connection");
+const { errorMonitor } = require("mysql2/lib/pool");
 
 // @desc        회원가입
 // @route       POST /api/v1/users
@@ -22,7 +23,7 @@ exports.createUser = async (req, res, next) => {
     [result] = await connection.query(query, data);
     user_id = result.insertId;
   } catch (e) {
-    res.status(500).json();
+    res.status(555).json({ error: e });
     return;
   }
 
@@ -68,7 +69,7 @@ exports.login = async (req, res, next) => {
       return;
     }
   } catch (e) {
-    res.status(500).json();
+    res.status(503).json();
     return;
   }
 
