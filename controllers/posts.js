@@ -25,9 +25,9 @@ exports.uploadPhoto = async (req, res, next) => {
   photo.name = `photo_${user_id}_${Date.now()}${path.parse(photo.name).ext}`;
 
   let file = photo.data;
-  const S3_BUCKET = "julie9312-test-edu";
-  const AWS_ACCESS_KEY_ID = "AKIA4DYY6RHMMBHTJHO4";
-  const AWS_SECRET_ACCESS_KEY = "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";
+  const S3_BUCKET = "//////secret//////";
+  const AWS_ACCESS_KEY_ID = "//////secret//////";
+  const AWS_SECRET_ACCESS_KEY = "//////secret//////";
 
   AWS.config.update({
     accessKeyId: AWS_ACCESS_KEY_ID,
